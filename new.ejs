@@ -1,0 +1,42 @@
+<%layout ("/layouts/boilerplate")%>
+<body>
+    <div class="row mt-3">
+     <div class="col-8 offset-2">
+        
+    <h3 >Create a new classroom</h3>
+   
+    <form method="POST" action="/listings" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label for="batchname" class="form-label">Batchname</label>
+            <input name="batchname" type="text" placeholder="Batchname" class="form-control" required>
+            <div class="valid-feedback">Batchname looks good</div>
+        </div>
+        
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea name="description" type="text" class="form-control" required></textarea>
+            <div class="invalid-feedback">Please enter a Short description</div>
+        </div>
+        <div class="row">
+            <div class="mb-3 col-md-4">
+                <label for="subject" class="form-label">Subject</label>
+                <input name="subject" type="text" placeholder="Subject" class="form-control" required>
+                <div class="invalid-feedback">Please enter a valid subject</div>
+            </div>
+            <div class="mb-3 col-md-8">
+                <label for="teachername" class="form-label">Teachername</label>
+                <input name="teachername" type="text" placeholder="Teachername" class="form-control" required>
+                <div class="invalid-feedback">Please enter a valid teachername</div>
+            </div>
+        </div>
+    
+       <div class="mb-3">
+           <label for="image" class="form-label">Image</label>
+           <input name="image" type="text" placeholder="Image Link/URL" class="form-control">
+       </div>
+
+        <button class="btn btn-dark mb-3 add-button">Submit</button>
+    </form>
+</div>
+    </div>
+</body>

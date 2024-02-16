@@ -1,0 +1,58 @@
+<%layout("/layouts/boilerplateclassroom.ejs")%>
+      
+      <div class="row mt-3">
+        <div class="col-8 offset-3">
+        <h3><%=listing.batchname%></h3>
+        </div>
+        <div class="card col-6 offset-3 show-card">
+            <img src="<%=listing.image%>" class="card-img-top show-img" alt="listing">
+            <div class="card-body">
+              <p class="card-text">
+                <%=listing.description%>
+                <br />    
+                <b>Subject:</b> <%=listing.subject%>
+                <br />
+                <hr />
+                Teacher: <%=listing.teachername%>
+              </p>
+            </div>
+          </div>
+        
+        </div>
+        <div class="btns">
+            <a href="/listings/<%=listing._id%>/edit" class="btn  btn-dark edit-btn offset-3 mb-3">Edit Listing</a>
+             <form method="POST" action="/listings/<%=listing._id%>?_method=DELETE">
+            <button class="btn btn-dark mb-3">Delete</button>
+          </form>
+        </div>
+        <hr />
+        <div class="col-8 offset-3 mb-3">
+          <h4>Announce something to your class</h4>
+          <form method="POST" action="/listings/<%=listing._id%>/announcements" novalidate class="needs-validation">
+            <div class="mb-3">
+              <label for="comment" class="form-label">Comment</label>
+              <textarea name="announcement[comment]" id="comment" rows="3" cols="30" class="form-control" required></textarea>
+              <div class="invalid-feedback">Comment is required</div>
+            </div>
+            <button class="btn btn-outline-dark">Submit</button>
+          </form>
+          <hr />
+          <p><b>All Announcements</b></p>
+
+          <div class="row">
+          <%for(review of listing.announcements){ %>
+            <div class="card mb-3 col-5 ms-3">
+              <div class="card-body">
+                <p class="card-text">
+                  <%=review.comment%>
+                </p>
+              </div>
+              <form class="mb-3" method="POST" action="/listings/<%=listing._id%>/announcements/<%=review._id%>?_method=DELETE">
+                <button  class="btn btn-outline-dark btn-sm ">Delete</button>
+              </form>
+            </div>
+          <%}%>
+          </div>
+        </div>
+    </div>
+
