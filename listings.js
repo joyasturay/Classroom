@@ -1,35 +1,57 @@
-const mongoose=require("mongoose");
-const Schema=mongoose.Schema;
-const Announcement=require("./announcement.js");
+const express=require("express");
+const router=express.Router({mergeParams:true});
+const wrapAsync=require("../utils/wrapAsync.js");
+const ExpressError=require("../utils/ExpressError.js");
+const {listingSchema}=require("../schema.js");
+const Listing=require("../models/listings.js");
+const validateListing=(req,res,next)=>{
+    let {error}=listingSchema.validate(req.body);
+    if(error){
+        let errMsg = error.details.map(el => el.message).join(',');
+        throw new ExpressError(400,errMsg);
+    }else{
+        next();
+    }
 
-const listingSchema=new Schema({
-    batchname:{
-        type:String,
-        required:true
-    },
-    teachername:{
-        type:String,
-        required:true,
-    },
-    subject:{
-        type:String,
-        required:true,
-    },
-    description:{
-        type:String,
-        required:true,
-    },
-    image:{
-        type:String,
-        default:"https://images.unsplash.com/photo-1509233725247-49e657c54213?q=80&w=1949&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        set:(v)=>v===""?"https://images.unsplash.com/photo-1509233725247-49e657c54213?q=80&w=1949&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        :v,
-    },
-    announcements:[{
-        type:Schema.Types.ObjectId,
-        ref:"Announcement",
-    }],
-    
+};
+//listings route
+router.get("/",wrapAsync(async(req,res)=>{
+    const listings=await Listing.find({});
+    res.render("./listings/index.ejs",{listings});
+}));
+
+  
+//new route
+router.get("/new",(req,res)=>{
+    res.render("./listings/new.ejs");
 });
-const Listing=mongoose.model("Listing",listingSchema);
-module.exports=Listing;
+router.post("/",validateListing,wrapAsync(async(req,res)=>{
+    const listing=new Listing(req.body);
+    await listing.save();
+    req.flash("success","listing created successfully");
+    res.redirect("/listings");
+}));
+//show route
+router.get("/:id",wrapAsync(async(req,res)=>{
+    let {id}=req.params;
+    const listing=await Listing.findById(id).populate("announcements");
+    res.render("./listings/show.ejs",{listing});
+}));
+//edit route
+router.get("/:id/edit",wrapAsync(async(req,res)=>{
+    let {id}=req.params;
+    const listing=await Listing.findById(id);
+    res.render("./listings/edit.ejs",{listing});
+}));
+router.put("/:id",wrapAsync(async(req,res)=>{
+    let {id}=req.params;
+    const listing=await Listing.findByIdAndUpdate(id,{...req.body.listing});
+    res.redirect(`/listings/${id}`);
+}));
+//delete route
+router.delete("/:id",wrapAsync(async(req,res)=>{
+    let {id}=req.params;
+    const listing=await Listing.findByIdAndDelete(id);
+    res.redirect("/listings");
+}));
+module.exports=router;
